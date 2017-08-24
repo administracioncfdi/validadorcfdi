@@ -1,0 +1,1 @@
+export { generaCadena } from './cadenaOriginal'
