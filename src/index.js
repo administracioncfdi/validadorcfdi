@@ -1,1 +1,5 @@
-export { generaCadena } from './cadenaOriginal'
+import cadenaOriginal from './cadenaOriginal'
+
+export default {
+  cadenaOriginal
+}
