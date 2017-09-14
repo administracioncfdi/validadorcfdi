@@ -1,4 +1,5 @@
 import libxslt from 'libxslt'
+import libxmljs from 'libxmljs'
 import path from 'path'
 import fs from 'fs'
 
@@ -17,6 +18,54 @@ function callbackToPromise (method, ...args) {
       return err ? reject(err) : resolve(result)
     })
   })
+}
+
+/**
+ * Sanitizes an input according to SAT rules
+ * Converts tabs, carriage returns and line breaks to spaces
+ * Removes leading and trailing spaces
+ *
+ * @param {string} value - String to be sanitized
+ * @return {string} Sanitized response
+ */
+function sanitizeInput (value = '') {
+  return value.replace(/\r?\n|\r|\t|(\s)+/g, ' ').trim()
+}
+
+/**
+ * Obtains the values of the cadena original del complemento as specified by SAT
+ *
+ * @param {string} value - String to be sanitized
+ * @return {Array} cadenaOriginal of complemento
+ */
+function getCCValues (factura = '') {
+  let cadenaOriginal = []
+  if (!factura) return cadenaOriginal
+  const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
+
+  // 1. Version
+  const version = (timbreFiscalDigital.attr('Version') && timbreFiscalDigital.attr('Version').value()) || ''
+  if (version) cadenaOriginal.push(version)
+  // 2. UUID
+  const UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase()) || ''
+  if (UUID) cadenaOriginal.push(UUID)
+  // 3. FechaTimbrado
+  const fechaTimbrado = (timbreFiscalDigital.attr('FechaTimbrado') && timbreFiscalDigital.attr('FechaTimbrado').value()) || ''
+  if (fechaTimbrado) cadenaOriginal.push(fechaTimbrado)
+  // 4. RfcProvCertif
+  const rfcProvCertif = (timbreFiscalDigital.attr('RfcProvCertif') && timbreFiscalDigital.attr('RfcProvCertif').value()) || ''
+  if (rfcProvCertif) cadenaOriginal.push(rfcProvCertif)
+  // 5. Leyenda Optional
+  const leyenda = (timbreFiscalDigital.attr('Leyenda') && timbreFiscalDigital.attr('Leyenda').value()) || ''
+  if (leyenda) cadenaOriginal.push(leyenda)
+  // 6. SelloCFD
+  const selloCFD = (timbreFiscalDigital.attr('SelloCFD') && timbreFiscalDigital.attr('SelloCFD').value()) || ''
+  if (selloCFD) cadenaOriginal.push(selloCFD)
+  // 7. NoCertificadoSAT
+  const noCertificado = (timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value()) || ''
+  if (noCertificado) cadenaOriginal.push(noCertificado)
+
+  return cadenaOriginal.map(sanitizeInput)
 }
 
 export default {
@@ -62,5 +111,30 @@ export default {
     } catch (e) {
       return false
     }
+  },
+  /**
+   * Generate a Cadena Original del complemento from a given XML file path
+   *
+   * @param  {string}  facturaXML - The XML string of a 3.3 factura
+   * @return {string} Cadena Original of Complemento string result
+   */
+  generaCadenaOriginalCC: (facturaXML) => {
+    let factura, cadenaOriginal
+
+    try {
+      factura = libxmljs.parseXml(facturaXML)
+    } catch (e) {
+      return false
+    }
+
+    cadenaOriginal = getCCValues(factura)
+
+    // Validate size and that all elements contain a truthy value
+    if (cadenaOriginal.length < 6 || cadenaOriginal.some((element) => !element)) {
+      return false
+    }
+
+    // Build the resulting string
+    return '||' + cadenaOriginal.join('|') + '||'
   }
 }
