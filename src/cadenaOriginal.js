@@ -1,5 +1,5 @@
 import libxslt from 'libxslt'
-import libxmljs from 'libxmljs'
+import xmlParser from './xmlParser'
 import path from 'path'
 import fs from 'fs'
 
@@ -121,12 +121,8 @@ export default {
   generaCadenaOriginalCC: (facturaXML) => {
     let factura, cadenaOriginal
 
-    try {
-      factura = libxmljs.parseXml(facturaXML)
-    } catch (e) {
-      return false
-    }
-
+    factura = xmlParser.parseXML(facturaXML)
+    if (!factura) return false
     cadenaOriginal = getCCValues(factura)
 
     // Validate size and that all elements contain a truthy value
