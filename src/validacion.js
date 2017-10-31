@@ -145,7 +145,7 @@ async function composeResults (facturaXML = '', certificado = '') {
  * @return {boolean} whether Sello Emisor is valid given the certificate
  */
 async function validaSelloEmisor (facturaXML, certificado, selloCFDI) {
-  if (!facturaXML || !certificado || !selloCFDI || selloCFDI.length !== 344) return false
+  if (!facturaXML || !certificado || !selloCFDI || (selloCFDI.length !== 344 && selloCFDI.length !== 172)) return false
   const cadenaOriginal = await cadena.generaCadena(facturaXML)
   if (!cadenaOriginal) return false
   const cadenaOriginalHash = sha256Digest(cadenaOriginal)
@@ -164,7 +164,7 @@ async function validaSelloEmisor (facturaXML, certificado, selloCFDI) {
  * @return {boolean} whether Sello SAT is valid given the certificate
  */
 async function validaSelloSAT (facturaXML, certificadoSAT, selloSAT) {
-  if (!facturaXML || !certificadoSAT || !selloSAT || selloSAT.length !== 344) return false
+  if (!facturaXML || !certificadoSAT || !selloSAT || (selloSAT.length !== 344 && selloSAT.length !== 172)) return false
   const cadenaOriginalCC = await cadena.generaCadenaOriginalCC(facturaXML)
   if (!cadenaOriginalCC) return false
   const cadenaOriginalHash = sha256Digest(cadenaOriginalCC)
@@ -186,9 +186,10 @@ async function validaFactura (facturaXML, certificadoSAT) {
   // Read certificados, certificates and general values from factura
   let result = await composeResults(facturaXML, certificadoSAT)
   if (result.message) return result
-
   const validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD)
+  result.validaSelloEmisorResult = validaSelloEmisorResult
   const validaSelloSATResult = await validaSelloSAT(facturaXML, certificadoSAT, result.selloSAT)
+  result.validaSelloSATResult = validaSelloSATResult
   result.valid = validaSelloEmisorResult && validaSelloSATResult
 
   return result
