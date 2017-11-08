@@ -2,14 +2,6 @@ import { expect } from 'chai'
 import validador from '../src/index'
 import path from 'path'
 import fs from 'fs'
-import forge from 'node-forge'
-
-function getPKFromDer (der) {
-  let asnObj = forge.asn1.fromDer(der)
-  let asn1Cert = forge.pki.certificateFromAsn1(asnObj)
-  // PEM -> forge.pki.publicKeyToPem(asn1Cert.publicKey)
-  return asn1Cert.publicKey
-}
 
 const facturaPath = path.join('test', 'ejemploCFDIv33.xml')
 const certificadoSATPath = path.join('test', 'certificado.cer')
