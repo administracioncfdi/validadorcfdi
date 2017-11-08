@@ -1,11 +1,12 @@
 {
   "name": "validadorcfdi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./dist/index.js",
   "scripts": {
     "init": "mkdir dist",
     "clean": "rm -rf dist",
     "start": "npm run dev",
+    "dev": "npm test -- -w",
     "prebuild": "npm run clean && npm run init",
     "build": "babel ./src -d ./dist",
     "test": "mocha --compilers js:babel-core/register ./test/**/*.js"
@@ -34,5 +35,8 @@
     "libxmljs": "^0.18.7",
     "libxslt": "^0.6.5",
     "node-forge": "^0.7.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }
