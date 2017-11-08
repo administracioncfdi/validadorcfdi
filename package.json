@@ -1,6 +1,6 @@
 {
-  "name": "CFDITools",
-  "version": "0.0.1",
+  "name": "validadorcfdi",
+  "version": "1.0.0",
   "main": "./dist/index.js",
   "scripts": {
     "init": "mkdir dist",
