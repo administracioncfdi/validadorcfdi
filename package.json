@@ -8,7 +8,7 @@
     "start": "npm run dev",
     "dev": "npm test -- -w",
     "prebuild": "npm run clean && npm run init",
-    "build": "babel ./src -d ./dist",
+    "build": "babel ./src -d ./dist --copy-files",
     "test": "mocha --compilers js:babel-core/register ./test/**/*.js"
   },
   "repository": {

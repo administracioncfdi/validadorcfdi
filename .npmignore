@@ -1,2 +1,5 @@
 src
 .babelrc
+.git
+.editorconfig
+.eslintrc
