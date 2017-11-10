@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import validador from '../src/index'
+import validador from '../dist/index'
 import path from 'path'
 import fs from 'fs'
 
