@@ -22,7 +22,7 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cadenaPath = _path2.default.join('src', 'xslt', 'cadenaoriginal_3_3.xslt');
+var cadenaPath = _path2.default.join(__dirname, 'xslt', 'cadenaoriginal_3_3.xslt');
 
 /**
  * Converts a callback to a promise, used for async/await
@@ -104,6 +104,7 @@ exports.default = {
    * @return {Promise<string>} Cadena Original string result
    */
   generaCadena: async function generaCadena(facturaXML) {
+    console.log("current path", __dirname);
     if (!facturaXML) return false;
     try {
       var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, cadenaPath);

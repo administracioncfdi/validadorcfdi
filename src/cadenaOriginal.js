@@ -3,7 +3,7 @@ import xmlParser from './xmlParser'
 import path from 'path'
 import fs from 'fs'
 
-const cadenaPath = path.join('src', 'xslt', 'cadenaoriginal_3_3.xslt')
+const cadenaPath = path.join(__dirname, 'xslt', 'cadenaoriginal_3_3.xslt')
 
 /**
  * Converts a callback to a promise, used for async/await
