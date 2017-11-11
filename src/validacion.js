@@ -1,5 +1,5 @@
 import cadena from './cadenaOriginal'
-import xmlParser from './xmlParser'
+import { parseXML } from './xmlParser'
 import forge from 'node-forge'
 
 /**
@@ -94,7 +94,7 @@ async function composeResults (facturaXML = '', certificado = '') {
     result.message = 'Factura o certificado inexistente'
     return result
   }
-  let factura = xmlParser.parseXML(facturaXML)
+  let factura = parseXML(facturaXML)
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída'

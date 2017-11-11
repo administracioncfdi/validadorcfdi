@@ -1,5 +1,5 @@
 import libxslt from 'libxslt'
-import xmlParser from './xmlParser'
+import { parseXML } from './xmlParser'
 import path from 'path'
 import fs from 'fs'
 
@@ -121,7 +121,7 @@ export default {
   generaCadenaOriginalCC: (facturaXML) => {
     let factura, cadenaOriginal
 
-    factura = xmlParser.parseXML(facturaXML)
+    factura = parseXML(facturaXML)
     if (!factura) return false
     cadenaOriginal = getCCValues(factura)
 

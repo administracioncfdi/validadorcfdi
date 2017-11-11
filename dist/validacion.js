@@ -10,8 +10,6 @@ var _cadenaOriginal2 = _interopRequireDefault(_cadenaOriginal);
 
 var _xmlParser = require('./xmlParser');
 
-var _xmlParser2 = _interopRequireDefault(_xmlParser);
-
 var _nodeForge = require('node-forge');
 
 var _nodeForge2 = _interopRequireDefault(_nodeForge);
@@ -123,7 +121,7 @@ async function composeResults() {
     result.message = 'Factura o certificado inexistente';
     return result;
   }
-  var factura = _xmlParser2.default.parseXML(facturaXML);
+  var factura = (0, _xmlParser.parseXML)(facturaXML);
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída';

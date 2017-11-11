@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import validador from '../dist/index'
+import { validacion } from '../dist/index'
 import path from 'path'
 import fs from 'fs'
 
@@ -16,81 +16,81 @@ const selloSAT = 'fxec83Jf8scyyXPo3b1YQBD3vnIvRHejHHJGCoPMSljnFOFzbIcvvbYQBEQ2Bv
 
 describe('validaSelloEmisor', () => {
   it('should return true for valid SelloEmisor', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloCFD)
-    expect(validacion).to.equal(true)
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloCFD)
+    expect(resValidacion).to.equal(true)
   })
   it('should return true for invalid SelloEmisor', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloSAT)
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloSAT)
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when no parameters are sent', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor()
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloEmisor()
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when invalid file is sent', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor('invalid', 'invalid', 'invalid')
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloEmisor('invalid', 'invalid', 'invalid')
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when wrong certificado is sent', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor(xmlString, 'invalid', selloCFD)
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, 'invalid', selloCFD)
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when wrong sello is sent', async () => {
-    const validacion = await validador.validacion.validaSelloEmisor(xmlString, certificadoEmisor, 'invalid')
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, certificadoEmisor, 'invalid')
+    expect(resValidacion).to.equal(false)
   })
 })
 
 describe('validaSelloSAT', () => {
   it('should return true for valid SelloSAT', async () => {
-    const validacion = await validador.validacion.validaSelloSAT(xmlString, certificadoSAT, selloSAT)
-    expect(validacion).to.equal(true)
+    const resValidacion = await validacion.validaSelloSAT(xmlString, certificadoSAT, selloSAT)
+    expect(resValidacion).to.equal(true)
   })
   it('should return true for invalid SelloSAT', async () => {
-    const validacion = await validador.validacion.validaSelloSAT(xmlString, certificadoSAT, selloCFD)
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloSAT(xmlString, certificadoSAT, selloCFD)
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when no parameters are sent', async () => {
-    const validacion = await validador.validacion.validaSelloSAT()
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloSAT()
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when invalid file is sent', async () => {
-    const validacion = await validador.validacion.validaSelloSAT('invalid', 'invalid', 'invalid')
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloSAT('invalid', 'invalid', 'invalid')
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when wrong certificado is sent', async () => {
-    const validacion = await validador.validacion.validaSelloSAT(xmlString, 'invalid', selloSAT)
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloSAT(xmlString, 'invalid', selloSAT)
+    expect(resValidacion).to.equal(false)
   })
   it('should return false when wrong sello is sent', async () => {
-    const validacion = await validador.validacion.validaSelloSAT(xmlString, certificadoSAT, 'invalid')
-    expect(validacion).to.equal(false)
+    const resValidacion = await validacion.validaSelloSAT(xmlString, certificadoSAT, 'invalid')
+    expect(resValidacion).to.equal(false)
   })
 })
 
 describe('validaFactura', () => {
   it('should validate a factura', async () => {
-    const result = await validador.validacion.validaFactura(xmlString, certificadoSAT)
+    const result = await validacion.validaFactura(xmlString, certificadoSAT)
     expect(result).to.deep.include({valid: true})
   })
   it('should return error message for invalid factura', async () => {
-    const result = await validador.validacion.validaFactura('', certificadoSAT)
+    const result = await validacion.validaFactura('', certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura o certificado inexistente'})
   })
   it('should return error message when incomplete XML is sent', async () => {
-    const result = await validador.validacion.validaFactura(xmlStringIncomplete, certificadoSAT)
+    const result = await validacion.validaFactura(xmlStringIncomplete, certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura no contiene nodo Comprobante'})
   })
   it('should return error message when incomplete XML with no TFD is sent', async () => {
-    const result = await validador.validacion.validaFactura(xmlStringNoTimbre, certificadoSAT)
+    const result = await validacion.validaFactura(xmlStringNoTimbre, certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura no contiene Timbre Fiscal Digital'})
   })
   it('should return error message when incomplete XML with missing attributes is sent', async () => {
-    const result = await validador.validacion.validaFactura(xmlStringNoAttributes, certificadoSAT)
+    const result = await validacion.validaFactura(xmlStringNoAttributes, certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura no contiene certificados correctos'})
   })
   it('should return error message when invalid XML is sent', async () => {
-    const result = await validador.validacion.validaFactura('something wrong', certificadoSAT)
+    const result = await validacion.validaFactura('something wrong', certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura no pudo ser leída'})
   })
 })

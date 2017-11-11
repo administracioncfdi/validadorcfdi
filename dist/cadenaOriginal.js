@@ -10,8 +10,6 @@ var _libxslt2 = _interopRequireDefault(_libxslt);
 
 var _xmlParser = require('./xmlParser');
 
-var _xmlParser2 = _interopRequireDefault(_xmlParser);
-
 var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
@@ -149,7 +147,7 @@ exports.default = {
     var factura = void 0,
         cadenaOriginal = void 0;
 
-    factura = _xmlParser2.default.parseXML(facturaXML);
+    factura = (0, _xmlParser.parseXML)(facturaXML);
     if (!factura) return false;
     cadenaOriginal = getCCValues(factura);
 
