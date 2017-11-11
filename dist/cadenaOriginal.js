@@ -104,7 +104,6 @@ exports.default = {
    * @return {Promise<string>} Cadena Original string result
    */
   generaCadena: async function generaCadena(facturaXML) {
-    console.log("current path", __dirname);
     if (!facturaXML) return false;
     try {
       var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, cadenaPath);
