@@ -179,7 +179,13 @@ async function validaSelloEmisor(facturaXML, certificado, selloCFDI) {
   var publicKeyCert = getPKFromBase64(certificado);
   var signature = _nodeForge2.default.util.decode64(selloCFDI);
   if (!publicKeyCert || !signature) return false;
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature);
+  var verificationResult = void 0;
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature);
+  } catch (e) {
+    return false;
+  }
+  return verificationResult;
 }
 
 /**
@@ -194,12 +200,19 @@ async function validaSelloSAT(facturaXML, certificadoSAT, selloSAT) {
   if (!facturaXML || !certificadoSAT || !selloSAT || selloSAT.length !== 344 && selloSAT.length !== 172) return false;
   var cadenaOriginalCC = await _cadenaOriginal2.default.generaCadenaOriginalCC(facturaXML);
   if (!cadenaOriginalCC) return false;
-  var cadenaOriginalHash = sha256Digest(cadenaOriginalCC);
   var certificateDer = getCertificateFromDer(certificadoSAT);
   var publicKeyCert = certificateDer && certificateDer.publicKey;
   var signature = _nodeForge2.default.util.decode64(selloSAT);
+
   if (!publicKeyCert || !signature) return false;
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature);
+  var cadenaOriginalHash = sha256Digest(cadenaOriginalCC);
+  var verificationResult = void 0;
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature);
+  } catch (e) {
+    return false;
+  }
+  return verificationResult;
 }
 
 /**
@@ -223,6 +236,7 @@ async function validaFactura(facturaXML, certificadoSAT) {
 }
 
 exports.default = {
+  readFactura: composeResults,
   validaSelloEmisor: validaSelloEmisor,
   validaSelloSAT: validaSelloSAT,
   validaFactura: validaFactura

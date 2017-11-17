@@ -72,7 +72,7 @@ function getCCValues() {
   var version = timbreFiscalDigital.attr('Version') && timbreFiscalDigital.attr('Version').value() || '';
   if (version) cadenaOriginal.push(version);
   // 2. UUID
-  var UUID = timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase() || '';
+  var UUID = timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value() || '';
   if (UUID) cadenaOriginal.push(UUID);
   // 3. FechaTimbrado
   var fechaTimbrado = timbreFiscalDigital.attr('FechaTimbrado') && timbreFiscalDigital.attr('FechaTimbrado').value() || '';

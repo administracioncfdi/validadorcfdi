@@ -47,7 +47,7 @@ function getCCValues (factura = '') {
   const version = (timbreFiscalDigital.attr('Version') && timbreFiscalDigital.attr('Version').value()) || ''
   if (version) cadenaOriginal.push(version)
   // 2. UUID
-  const UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase()) || ''
+  const UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value()) || ''
   if (UUID) cadenaOriginal.push(UUID)
   // 3. FechaTimbrado
   const fechaTimbrado = (timbreFiscalDigital.attr('FechaTimbrado') && timbreFiscalDigital.attr('FechaTimbrado').value()) || ''

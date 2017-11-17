@@ -152,7 +152,13 @@ async function validaSelloEmisor (facturaXML, certificado, selloCFDI) {
   const publicKeyCert = getPKFromBase64(certificado)
   const signature = forge.util.decode64(selloCFDI)
   if (!publicKeyCert || !signature) return false
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  let verificationResult
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  } catch (e) {
+    return false
+  }
+  return verificationResult
 }
 
 /**
@@ -167,12 +173,19 @@ async function validaSelloSAT (facturaXML, certificadoSAT, selloSAT) {
   if (!facturaXML || !certificadoSAT || !selloSAT || (selloSAT.length !== 344 && selloSAT.length !== 172)) return false
   const cadenaOriginalCC = await cadena.generaCadenaOriginalCC(facturaXML)
   if (!cadenaOriginalCC) return false
-  const cadenaOriginalHash = sha256Digest(cadenaOriginalCC)
   const certificateDer = getCertificateFromDer(certificadoSAT)
   const publicKeyCert = certificateDer && certificateDer.publicKey
   const signature = forge.util.decode64(selloSAT)
+
   if (!publicKeyCert || !signature) return false
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  const cadenaOriginalHash = sha256Digest(cadenaOriginalCC)
+  let verificationResult
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  } catch (e) {
+    return false
+  }
+  return verificationResult
 }
 
 /**
@@ -196,6 +209,7 @@ async function validaFactura (facturaXML, certificadoSAT) {
 }
 
 export default {
+  readFactura: composeResults,
   validaSelloEmisor: validaSelloEmisor,
   validaSelloSAT: validaSelloSAT,
   validaFactura: validaFactura
