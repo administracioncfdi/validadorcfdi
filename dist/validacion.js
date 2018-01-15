@@ -105,6 +105,19 @@ function cleanCertificateSerialNumber() {
 }
 
 /**
+ * Clean carriage returns from a string
+ *
+ * @param {string} str - string to clean
+ * @return {string} clean string
+ */
+function cleanSpecialCharacters() {
+  var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+  str = str.trim();
+  return str.replace(/[\n\r]+/g, '');
+}
+
+/**
  * Returns basic factura and certificate information as an object
  * Note: this doesn't validate sellos
  *
@@ -172,6 +185,8 @@ async function composeResults() {
  * @return {boolean} whether Sello Emisor is valid given the certificate
  */
 async function validaSelloEmisor(facturaXML, certificado, selloCFDI) {
+  certificado = cleanSpecialCharacters(certificado);
+  selloCFDI = cleanSpecialCharacters(selloCFDI);
   if (!facturaXML || !certificado || !selloCFDI || selloCFDI.length !== 344 && selloCFDI.length !== 172) return false;
   var cadenaOriginal = await _cadenaOriginal2.default.generaCadena(facturaXML);
   if (!cadenaOriginal) return false;
