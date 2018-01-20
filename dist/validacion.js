@@ -114,7 +114,7 @@ function cleanSpecialCharacters() {
   var str = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
   str = str.trim();
-  return str.replace(/[\n\r]+/g, '');
+  return str.replace(/[\s\n\r]+/g, '');
 }
 
 /**

@@ -32,6 +32,14 @@ describe('validaSelloEmisor', () => {
     const resValidacion = await validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloSAT)
     expect(resValidacion).to.equal(false)
   })
+  it('should remove carriage returns and spaces from certificadoEmisor', async () => {
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, '\n' + certificadoEmisor + '  \r\n', selloCFD)
+    expect(resValidacion).to.equal(true)
+  })
+  it('should remove carriage returns and spaces from sello', async () => {
+    const resValidacion = await validacion.validaSelloEmisor(xmlString, certificadoEmisor, selloCFD.substr(0, 10) + '\n ' + selloCFD.substr(10) + '\r\n')
+    expect(resValidacion).to.equal(true)
+  })
   it('should return false when no parameters are sent', async () => {
     const resValidacion = await validacion.validaSelloEmisor()
     expect(resValidacion).to.equal(false)

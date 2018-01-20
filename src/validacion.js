@@ -88,7 +88,7 @@ function cleanCertificateSerialNumber (serialNumber = '') {
  */
 function cleanSpecialCharacters (str = '') {
   str = str.trim()
-  return str.replace(/[\n\r]+/g, '')
+  return str.replace(/[\s\n\r]+/g, '')
 }
 
 /**
