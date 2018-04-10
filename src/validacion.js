@@ -119,6 +119,7 @@ async function composeResults (facturaXML = '', certificado = '') {
   }
   result.version = (comprobante.attr('Version') && comprobante.attr('Version').value()) || ''
   result.certificadoEmisor = (comprobante.attr('Certificado') && comprobante.attr('Certificado').value()) || ''
+  result.certificadoEmisor = cleanSpecialCharacters(result.certificadoEmisor)
 
   const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
   if (!timbreFiscalDigital) {
@@ -127,7 +128,9 @@ async function composeResults (facturaXML = '', certificado = '') {
   }
   result.UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase()) || ''
   result.selloCFD = (timbreFiscalDigital.attr('SelloCFD') && timbreFiscalDigital.attr('SelloCFD').value()) || ''
+  result.selloCFD = cleanSpecialCharacters(result.selloCFD)
   result.selloSAT = (timbreFiscalDigital.attr('SelloSAT') && timbreFiscalDigital.attr('SelloSAT').value()) || ''
+  result.selloSAT = cleanSpecialCharacters(result.selloSAT)
 
   const cadenaOriginal = await cadena.generaCadena(facturaXML)
   result.cadenaOriginal.cadena = cadenaOriginal
