@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import validador from '../src/index'
+import { cadenaOriginal } from '../dist/index'
 import path from 'path'
 import fs from 'fs'
 
@@ -10,45 +10,45 @@ const xmlString = fs.readFileSync(facturaPath, 'utf8')
 
 describe('generaCadena', () => {
   it('should generate a correct cadena', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadena(xmlString)
+    const cadena = await cadenaOriginal.generaCadena(xmlString)
     expect(cadena).to.equal(cadenaOriginalResult)
   })
   it('should return false when no XML path is sent', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadena()
+    const cadena = await cadenaOriginal.generaCadena()
     expect(cadena).to.equal(false)
   })
   it('should return false when invalid XML is sent', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadena('something wrong')
+    const cadena = await cadenaOriginal.generaCadena('something wrong')
     expect(cadena).to.equal(false)
   })
 })
 
 describe('generaCadenaFile', () => {
   it('should generate a correct cadena', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadenaFile(facturaPath)
+    const cadena = await cadenaOriginal.generaCadenaFile(facturaPath)
     expect(cadena).to.equal(cadenaOriginalResult)
   })
   it('should return false when no file is sent', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadenaFile()
+    const cadena = await cadenaOriginal.generaCadenaFile()
     expect(cadena).to.equal(false)
   })
   it('should return false when invalid file is sent', async () => {
-    const cadena = await validador.cadenaOriginal.generaCadenaFile('invalid')
+    const cadena = await cadenaOriginal.generaCadenaFile('invalid')
     expect(cadena).to.equal(false)
   })
 })
 
 describe('generaCadenaOriginalCC', () => {
   it('should generate a correct cadena', () => {
-    const cadena = validador.cadenaOriginal.generaCadenaOriginalCC(xmlString)
+    const cadena = cadenaOriginal.generaCadenaOriginalCC(xmlString)
     expect(cadena).to.equal(cadenaOriginalCCResult)
   })
   it('should return false when no XML path is sent', () => {
-    const cadena = validador.cadenaOriginal.generaCadenaOriginalCC()
+    const cadena = cadenaOriginal.generaCadenaOriginalCC()
     expect(cadena).to.equal(false)
   })
   it('should return false when invalid XML is sent', () => {
-    const cadena = validador.cadenaOriginal.generaCadenaOriginalCC('something wrong')
+    const cadena = cadenaOriginal.generaCadenaOriginalCC('something wrong')
     expect(cadena).to.equal(false)
   })
 })

@@ -1,14 +1,15 @@
 {
   "name": "validadorcfdi",
-  "version": "1.0.0",
+  "version": "1.0.10",
   "main": "./dist/index.js",
   "scripts": {
     "init": "mkdir dist",
     "clean": "rm -rf dist",
     "start": "npm run dev",
+    "dev": "npm test -- -w",
     "prebuild": "npm run clean && npm run init",
-    "build": "babel ./src -d ./dist",
-    "test": "mocha --compilers js:babel-core/register ./test/**/*.js"
+    "build": "babel ./src -d ./dist --copy-files",
+    "test": "npm run build && mocha --compilers js:babel-core/register ./test/**/*.js"
   },
   "repository": {
     "url": "git@github.com:adminsitracioncfdi/validadorcfdi33.git",
@@ -18,21 +19,24 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-eslint": "^7.2.3",
     "babel-preset-es2015": "^6.24.1",
     "chai": "^4.1.1",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "mocha": "^3.5.0"
+    "mocha": "^5.2.0"
   },
   "dependencies": {
-    "libxmljs": "^0.18.7",
+    "libxmljs": "^0.19.5",
     "libxslt": "^0.6.5",
     "node-forge": "^0.7.1"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

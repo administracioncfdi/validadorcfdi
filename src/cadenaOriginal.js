@@ -1,9 +1,9 @@
 import libxslt from 'libxslt'
-import xmlParser from './xmlParser'
+import { parseXML } from './xmlParser'
 import path from 'path'
 import fs from 'fs'
 
-const cadenaPath = path.join('src', 'xslt', 'cadenaoriginal_3_3.xslt')
+const cadenaPath = path.join(__dirname, 'xslt', 'cadenaoriginal_3_3.xslt')
 
 /**
  * Converts a callback to a promise, used for async/await
@@ -47,7 +47,7 @@ function getCCValues (factura = '') {
   const version = (timbreFiscalDigital.attr('Version') && timbreFiscalDigital.attr('Version').value()) || ''
   if (version) cadenaOriginal.push(version)
   // 2. UUID
-  const UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase()) || ''
+  const UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value()) || ''
   if (UUID) cadenaOriginal.push(UUID)
   // 3. FechaTimbrado
   const fechaTimbrado = (timbreFiscalDigital.attr('FechaTimbrado') && timbreFiscalDigital.attr('FechaTimbrado').value()) || ''
@@ -121,7 +121,7 @@ export default {
   generaCadenaOriginalCC: (facturaXML) => {
     let factura, cadenaOriginal
 
-    factura = xmlParser.parseXML(facturaXML)
+    factura = parseXML(facturaXML)
     if (!factura) return false
     cadenaOriginal = getCCValues(factura)
 

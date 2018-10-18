@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import xmlParser from '../src/xmlParser'
+import { parseXML } from '../dist/xmlParser'
 import path from 'path'
 import fs from 'fs'
 
@@ -8,19 +8,19 @@ const xmlString = fs.readFileSync(facturaPath, 'utf8')
 
 describe('parseXML', () => {
   it('should return a libxml object for a valid factura', async () => {
-    const xmlResult = xmlParser.parseXML(xmlString)
+    const xmlResult = parseXML(xmlString)
     expect(xmlResult.errors.length).to.equal(0)
   })
   it('should return false when no XML string is sent', async () => {
-    const xmlResult = xmlParser.parseXML()
+    const xmlResult = parseXML()
     expect(xmlResult).to.equal(false)
   })
   it('should return false when some other data type is sent', async () => {
-    const xmlResult = xmlParser.parseXML({yes: 'no'})
+    const xmlResult = parseXML({yes: 'no'})
     expect(xmlResult).to.equal(false)
   })
   it('should return false when invalid XML is sent', async () => {
-    const xmlResult = xmlParser.parseXML('something invalid')
+    const xmlResult = parseXML('something invalid')
     expect(xmlResult).to.equal(false)
   })
 })

@@ -1,7 +1,7 @@
 import cadenaOriginal from './cadenaOriginal'
 import validacion from './validacion'
 
-export default {
+export {
   cadenaOriginal,
   validacion
 }

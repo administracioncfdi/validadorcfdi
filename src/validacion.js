@@ -1,5 +1,5 @@
 import cadena from './cadenaOriginal'
-import xmlParser from './xmlParser'
+import { parseXML } from './xmlParser'
 import forge from 'node-forge'
 
 /**
@@ -81,6 +81,17 @@ function cleanCertificateSerialNumber (serialNumber = '') {
 }
 
 /**
+ * Clean carriage returns from a string
+ *
+ * @param {string} str - string to clean
+ * @return {string} clean string
+ */
+function cleanSpecialCharacters (str = '') {
+  str = str.trim()
+  return str.replace(/[\s\n\r]+/g, '')
+}
+
+/**
  * Returns basic factura and certificate information as an object
  * Note: this doesn't validate sellos
  *
@@ -94,7 +105,7 @@ async function composeResults (facturaXML = '', certificado = '') {
     result.message = 'Factura o certificado inexistente'
     return result
   }
-  let factura = xmlParser.parseXML(facturaXML)
+  let factura = parseXML(facturaXML)
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída'
@@ -108,6 +119,7 @@ async function composeResults (facturaXML = '', certificado = '') {
   }
   result.version = (comprobante.attr('Version') && comprobante.attr('Version').value()) || ''
   result.certificadoEmisor = (comprobante.attr('Certificado') && comprobante.attr('Certificado').value()) || ''
+  result.certificadoEmisor = cleanSpecialCharacters(result.certificadoEmisor)
 
   const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
   if (!timbreFiscalDigital) {
@@ -116,7 +128,9 @@ async function composeResults (facturaXML = '', certificado = '') {
   }
   result.UUID = (timbreFiscalDigital.attr('UUID') && timbreFiscalDigital.attr('UUID').value().toUpperCase()) || ''
   result.selloCFD = (timbreFiscalDigital.attr('SelloCFD') && timbreFiscalDigital.attr('SelloCFD').value()) || ''
+  result.selloCFD = cleanSpecialCharacters(result.selloCFD)
   result.selloSAT = (timbreFiscalDigital.attr('SelloSAT') && timbreFiscalDigital.attr('SelloSAT').value()) || ''
+  result.selloSAT = cleanSpecialCharacters(result.selloSAT)
 
   const cadenaOriginal = await cadena.generaCadena(facturaXML)
   result.cadenaOriginal.cadena = cadenaOriginal
@@ -145,6 +159,8 @@ async function composeResults (facturaXML = '', certificado = '') {
  * @return {boolean} whether Sello Emisor is valid given the certificate
  */
 async function validaSelloEmisor (facturaXML, certificado, selloCFDI) {
+  certificado = cleanSpecialCharacters(certificado)
+  selloCFDI = cleanSpecialCharacters(selloCFDI)
   if (!facturaXML || !certificado || !selloCFDI || (selloCFDI.length !== 344 && selloCFDI.length !== 172)) return false
   const cadenaOriginal = await cadena.generaCadena(facturaXML)
   if (!cadenaOriginal) return false
@@ -152,7 +168,13 @@ async function validaSelloEmisor (facturaXML, certificado, selloCFDI) {
   const publicKeyCert = getPKFromBase64(certificado)
   const signature = forge.util.decode64(selloCFDI)
   if (!publicKeyCert || !signature) return false
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  let verificationResult
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  } catch (e) {
+    return false
+  }
+  return verificationResult
 }
 
 /**
@@ -167,12 +189,19 @@ async function validaSelloSAT (facturaXML, certificadoSAT, selloSAT) {
   if (!facturaXML || !certificadoSAT || !selloSAT || (selloSAT.length !== 344 && selloSAT.length !== 172)) return false
   const cadenaOriginalCC = await cadena.generaCadenaOriginalCC(facturaXML)
   if (!cadenaOriginalCC) return false
-  const cadenaOriginalHash = sha256Digest(cadenaOriginalCC)
   const certificateDer = getCertificateFromDer(certificadoSAT)
   const publicKeyCert = certificateDer && certificateDer.publicKey
   const signature = forge.util.decode64(selloSAT)
+
   if (!publicKeyCert || !signature) return false
-  return publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  const cadenaOriginalHash = sha256Digest(cadenaOriginalCC)
+  let verificationResult
+  try {
+    verificationResult = publicKeyCert.verify(cadenaOriginalHash.digest().bytes(), signature)
+  } catch (e) {
+    return false
+  }
+  return verificationResult
 }
 
 /**
@@ -196,6 +225,7 @@ async function validaFactura (facturaXML, certificadoSAT) {
 }
 
 export default {
+  readFactura: composeResults,
   validaSelloEmisor: validaSelloEmisor,
   validaSelloSAT: validaSelloSAT,
   validaFactura: validaFactura
