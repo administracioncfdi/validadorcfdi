@@ -16,7 +16,7 @@
     "type": "git"
   },
   "author": "Alan Rodriguez <alanrodriguezromero@gmail.com>",
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
