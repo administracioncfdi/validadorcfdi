@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:cce11="http://www.sat.gob.mx/ComercioExterior11" xmlns:donat="http://www.sat.gob.mx/donat" xmlns:divisas="http://www.sat.gob.mx/divisas" xmlns:implocal="http://www.sat.gob.mx/implocal" xmlns:leyendasFisc="http://www.sat.gob.mx/leyendasFiscales" xmlns:pfic="http://www.sat.gob.mx/pfic" xmlns:tpe="http://www.sat.gob.mx/TuristaPasajeroExtranjero" xmlns:nomina12="http://www.sat.gob.mx/nomina12" xmlns:registrofiscal="http://www.sat.gob.mx/registrofiscal" xmlns:pagoenespecie="http://www.sat.gob.mx/pagoenespecie" xmlns:aerolineas="http://www.sat.gob.mx/aerolineas" xmlns:valesdedespensa="http://www.sat.gob.mx/valesdedespensa" xmlns:consumodecombustibles="http://www.sat.gob.mx/consumodecombustibles" xmlns:notariospublicos="http://www.sat.gob.mx/notariospublicos" xmlns:vehiculousado="http://www.sat.gob.mx/vehiculousado" xmlns:servicioparcial="http://www.sat.gob.mx/servicioparcialconstruccion" xmlns:decreto="http://www.sat.gob.mx/renovacionysustitucionvehiculos" xmlns:destruccion="http://www.sat.gob.mx/certificadodestruccion" xmlns:obrasarte="http://www.sat.gob.mx/arteantiguedades" xmlns:ine="http://www.sat.gob.mx/ine" xmlns:iedu="http://www.sat.gob.mx/iedu" xmlns:ventavehiculos="http://www.sat.gob.mx/ventavehiculos" xmlns:terceros="http://www.sat.gob.mx/terceros" xmlns:pago10="http://www.sat.gob.mx/Pagos" xmlns:ecc11="http://www.sat.gob.mx/EstadoDeCuentaCombustible">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:cce11="http://www.sat.gob.mx/ComercioExterior11" xmlns:donat="http://www.sat.gob.mx/donat" xmlns:divisas="http://www.sat.gob.mx/divisas" xmlns:implocal="http://www.sat.gob.mx/implocal" xmlns:leyendasFisc="http://www.sat.gob.mx/leyendasFiscales" xmlns:pfic="http://www.sat.gob.mx/pfic" xmlns:tpe="http://www.sat.gob.mx/TuristaPasajeroExtranjero" xmlns:nomina12="http://www.sat.gob.mx/nomina12" xmlns:registrofiscal="http://www.sat.gob.mx/registrofiscal" xmlns:pagoenespecie="http://www.sat.gob.mx/pagoenespecie" xmlns:aerolineas="http://www.sat.gob.mx/aerolineas" xmlns:valesdedespensa="http://www.sat.gob.mx/valesdedespensa" xmlns:consumodecombustibles="http://www.sat.gob.mx/consumodecombustibles" xmlns:notariospublicos="http://www.sat.gob.mx/notariospublicos" xmlns:vehiculousado="http://www.sat.gob.mx/vehiculousado" xmlns:servicioparcial="http://www.sat.gob.mx/servicioparcialconstruccion" xmlns:decreto="http://www.sat.gob.mx/renovacionysustitucionvehiculos" xmlns:destruccion="http://www.sat.gob.mx/certificadodestruccion" xmlns:obrasarte="http://www.sat.gob.mx/arteantiguedades" xmlns:ine="http://www.sat.gob.mx/ine" xmlns:iedu="http://www.sat.gob.mx/iedu" xmlns:ventavehiculos="http://www.sat.gob.mx/ventavehiculos" xmlns:terceros="http://www.sat.gob.mx/terceros" xmlns:pago10="http://www.sat.gob.mx/Pagos" xmlns:ecc11="http://www.sat.gob.mx/EstadoDeCuentaCombustible" xmlns:detallista="http://www.sat.gob.mx/detallista" xmlns:ecc12="http://www.sat.gob.mx/EstadoDeCuentaCombustible" xmlns:consumodecombustibles11="http://www.sat.gob.mx/consumodecombustibles" xmlns:gceh="http://www.sat.gob.mx/GastosHidrocarburos10" xmlns:ieeh="http://www.sat.gob.mx/IngresosHidrocarburos10">
 
   <!-- Con el siguiente método se establece que la salida deberá ser en texto -->
   <xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
@@ -2119,6 +2119,409 @@
     </xsl:call-template>
     <xsl:call-template name="Requerido">
       <xsl:with-param name="valor" select="./@Importe" />
+    </xsl:call-template>
+  </xsl:template>
+
+  <!-- Manejador de nodos tipo detallista -->
+  <xsl:template match="detallista:detallista">
+    <!--
+  Iniciamos el tratamiento de los atributos del sector detallista
+  -->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@documentStructureVersion"/>
+    </xsl:call-template>
+    <xsl:for-each select="detallista:orderIdentification/detallista:referenceIdentification">
+      <xsl:call-template name="Requerido">
+        <xsl:with-param name="valor" select="."/>
+      </xsl:call-template>
+    </xsl:for-each>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="detallista:orderIdentification/detallista:ReferenceDate"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="detallista:buyer/detallista:gln"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="detallista:seller/detallista:gln"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="detallista:seller/detallista:alternatePartyIdentification"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="detallista:totalAmount/detallista:Amount"/>
+    </xsl:call-template>
+    <xsl:for-each select="detallista:TotalAllowanceCharge/detallista:specialServicesType">
+      <xsl:call-template name="Opcional">
+        <xsl:with-param name="valor" select="."/>
+      </xsl:call-template>
+    </xsl:for-each>
+    <xsl:for-each select="detallista:TotalAllowanceCharge/detallista:Amount">
+      <xsl:call-template name="Opcional">
+        <xsl:with-param name="valor" select="."/>
+      </xsl:call-template>
+    </xsl:for-each>
+  </xsl:template>
+
+  <xsl:template match="ecc12:EstadoDeCuentaCombustible">
+      <!--Manejador de nodos tipo EstadoDeCuentaCombustible-->
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Version"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@TipoOperacion"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@NumeroDeCuenta"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@SubTotal"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Total"/>
+      </xsl:call-template>
+      <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia
+  -->
+      <xsl:apply-templates select="./ecc12:Conceptos"/>
+  </xsl:template>
+  <xsl:template match="ecc12:Conceptos">
+      <!--
+    Iniciamos el tratamiento de los atributos de ecc12:ConceptoEstadoDeCuentaCombustible
+  -->
+      <xsl:for-each select="./ecc12:ConceptoEstadoDeCuentaCombustible">
+          <xsl:apply-templates select="."/>
+      </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="ecc12:Traslados">
+      <!--
+    Iniciamos el tratamiento de los atributos de ecc12:Traslado
+  -->
+      <xsl:for-each select="./ecc12:Traslado">
+          <xsl:apply-templates select="."/>
+      </xsl:for-each>
+  </xsl:template>
+  <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia ConceptoEstadoDeCuentaCombustible
+  -->
+  <xsl:template match="ecc12:ConceptoEstadoDeCuentaCombustible">
+      <!--  Iniciamos el manejo de los nodos dependientes -->
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Identificador"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Fecha"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Rfc"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@ClaveEstacion"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Cantidad"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@TipoCombustible"/>
+      </xsl:call-template>
+      <xsl:call-template name="Opcional">
+          <xsl:with-param name="valor" select="./@Unidad"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@NombreCombustible"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@FolioOperacion"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@ValorUnitario"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Importe"/>
+      </xsl:call-template>
+      <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia
+  -->
+      <xsl:apply-templates select="./ecc12:Traslados"/>
+  </xsl:template>
+  <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia Traslado
+  -->
+  <xsl:template match="ecc12:Traslado">
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Impuesto"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@TasaOCuota"/>
+      </xsl:call-template>
+      <xsl:call-template name="Requerido">
+          <xsl:with-param name="valor" select="./@Importe"/>
+      </xsl:call-template>
+  </xsl:template>
+
+
+  <xsl:template match="consumodecombustibles11:ConsumoDeCombustibles">
+    <!--Manejador de nodos tipo ConsumoDeCombustibles-->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@version"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@tipoOperacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@numeroDeCuenta"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@subTotal"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@total"/>
+    </xsl:call-template>
+    <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia 
+  -->
+    <xsl:apply-templates select="./consumodecombustibles11:Conceptos"/>
+  </xsl:template>
+  <xsl:template match="consumodecombustibles11:Conceptos">
+    <!--
+    Iniciamos el tratamiento de los atributos de consumodecombustibles:ConceptoConsumoDeCombustibles
+  -->
+    <xsl:for-each select="./consumodecombustibles11:ConceptoConsumoDeCombustibles">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia ConceptoConsumoDeCombustibles
+  -->
+  <xsl:template match="consumodecombustibles11:ConceptoConsumoDeCombustibles">
+    <!--  Iniciamos el manejo de los nodos dependientes -->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@identificador"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@fecha"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@rfc"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@claveEstacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@tipoCombustible"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@cantidad"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@nombreCombustible"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@folioOperacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@valorUnitario"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@importe"/>
+    </xsl:call-template>
+    <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia 
+  -->
+    <xsl:apply-templates select="./consumodecombustibles11:Determinados"/>
+  </xsl:template>
+  <xsl:template match="consumodecombustibles11:Determinados">
+    <!--
+    Iniciamos el tratamiento de los atributos de consumodecombustibles:Determinado
+  -->
+    <xsl:for-each select="./consumodecombustibles11:Determinado">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia Determinado
+  -->
+  <xsl:template match="consumodecombustibles11:Determinado">
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@impuesto"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@tasaOCuota"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@importe"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="gceh:GastosHidrocarburos">
+    <!--Manejador de Atributos GastosHidrocarburos-->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Version"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@NumeroContrato"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@AreaContractual"/>
+    </xsl:call-template>
+    <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia 
+  -->
+    <xsl:for-each select="./gceh:Erogacion">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="gceh:Erogacion">
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@TipoErogacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@MontocuErogacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Porcentaje"/>
+    </xsl:call-template>
+    <!--
+    Iniciamos el tratamiento de los atributos de gceh:DocumentoRelacionado
+  -->
+    <xsl:for-each select="./gceh:DocumentoRelacionado">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+    <xsl:for-each select="./gceh:Actividades">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+    <xsl:for-each select="./gceh:CentroCostos">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <!--
+    Iniciamos el tratamiento de los atributos de gceh:DocumentoRelacionado
+  -->
+  <xsl:template match="gceh:DocumentoRelacionado">
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@OrigenErogacion"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@FolioFiscalVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@RFCProveedor"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@MontoTotalIVA"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@MontoRetencionISR"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@MontoRetencionIVA"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@MontoRetencionOtrosImpuestos"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@NumeroPedimentoVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@ClavePedimentoVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@ClavePagoPedimentoVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@MontoIVAPedimento"/>
+    </xsl:call-template>
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@OtrosImpuestosPagadosPedimento"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@FechaFolioFiscalVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Mes"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@MontoTotalErogaciones"/>
+    </xsl:call-template>
+  </xsl:template>
+  <!--
+    Iniciamos el tratamiento de los atributos de gceh:Actividades
+  -->
+  <xsl:template match="gceh:Actividades">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@ActividadRelacionada"/>
+    </xsl:call-template>
+    <xsl:for-each select="./gceh:SubActividades">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="gceh:SubActividades">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@SubActividadRelacionada"/>
+    </xsl:call-template>
+    <xsl:for-each select="./gceh:Tareas">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="gceh:Tareas">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@TareaRelacionada"/>
+    </xsl:call-template>
+  </xsl:template>
+  <!--
+    Iniciamos el tratamiento de los atributos de gceh:CentroCostos
+  -->
+  <xsl:template match="gceh:CentroCostos">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@Campo"/>
+    </xsl:call-template>
+    <xsl:for-each select="./gceh:Yacimientos">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="gceh:Yacimientos">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@Yacimiento"/>
+    </xsl:call-template>
+    <xsl:for-each select="./gceh:Pozos">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="gceh:Pozos">
+    <xsl:call-template name="Opcional">
+      <xsl:with-param name="valor" select="./@Pozo"/>
+    </xsl:call-template>
+  </xsl:template>
+
+  <xsl:template match="ieeh:IngresosHidrocarburos">
+    <!--Manejador de Atributos IngresosHidrocarburos-->
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Version"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@NumeroContrato"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@ContraprestacionPagadaOperador"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Porcentaje"/>
+    </xsl:call-template>
+    <!--
+    Iniciamos el manejo de los elementos hijo en la secuencia 
+  -->
+    <xsl:for-each select="./ieeh:DocumentoRelacionado">
+      <xsl:apply-templates select="."/>
+    </xsl:for-each>
+  </xsl:template>
+  <xsl:template match="ieeh:DocumentoRelacionado">
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@FolioFiscalVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@FechaFolioFiscalVinculado"/>
+    </xsl:call-template>
+    <xsl:call-template name="Requerido">
+      <xsl:with-param name="valor" select="./@Mes"/>
     </xsl:call-template>
   </xsl:template>
 
