@@ -34,7 +34,7 @@
   "dependencies": {
     "libxmljs": "^0.19.5",
     "libxslt": "^0.6.5",
-    "node-forge": "^0.7.1"
+    "node-forge": "^0.10.0"
   },
   "files": [
     "dist"
