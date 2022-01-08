@@ -13,7 +13,7 @@ Instalar usando [`npm`](https://www.npmjs.com/):
 ```bash
 npm install validadorcfdi --save
 ```
-La versión de Node mínima soportada es `v6.0.0`.
+La versión de Node mínima soportada es `v12.0.0`.
 
 ## Ejemplo de uso
 

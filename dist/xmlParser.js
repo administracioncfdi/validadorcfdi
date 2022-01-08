@@ -5,9 +5,9 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.parseXML = undefined;
 
-var _libxmljs = require('libxmljs');
+var _node1LibxmljsmtMyh = require('node1-libxmljsmt-myh');
 
-var _libxmljs2 = _interopRequireDefault(_libxmljs);
+var _node1LibxmljsmtMyh2 = _interopRequireDefault(_node1LibxmljsmtMyh);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23,7 +23,7 @@ function parseXML() {
   if (!facturaXML) return false;
   var factura = void 0;
   try {
-    factura = _libxmljs2.default.parseXml(facturaXML);
+    factura = _node1LibxmljsmtMyh2.default.parseXml(facturaXML);
   } catch (e) {
     return false;
   }
