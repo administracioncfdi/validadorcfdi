@@ -1,15 +1,16 @@
 {
   "name": "validadorcfdi",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "main": "./dist/index.js",
   "scripts": {
     "init": "mkdir dist",
     "clean": "rm -rf dist",
     "start": "npm run dev",
     "dev": "npm test -- -w",
+    "prepare": "npm run build && find dist/xslt/cfd -type f -name '*.xslt' | xargs sed -i '' 's#\"dist/xslt/cfd#\"node_modules/validadorcfdi/dist/xslt/cfd#g'",
     "prebuild": "npm run clean && npm run init",
     "build": "babel ./src -d ./dist --copy-files",
-    "test": "npm run build && mocha --compilers js:babel-core/register ./test/**/*.js"
+    "test": "npm run build && mocha --require babel-core/register ./test/**/*.js"
   },
   "repository": {
     "url": "git@github.com:adminsitracioncfdi/validadorcfdi33.git",

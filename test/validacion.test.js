@@ -3,11 +3,15 @@ import { validacion } from '../dist/index'
 import path from 'path'
 import fs from 'fs'
 
-const facturaPath = path.join('test', 'ejemploCFDIv33.xml')
+const factura33Path = path.join('test', 'ejemploCFDIv33.xml')
+const factura40Path = path.join('test', 'ejemploCFDIv40.xml')
 const certificadoSATPath = path.join('test', 'certificado.cer')
 const certificadoSAT = fs.readFileSync(certificadoSATPath, 'binary')
+const certificado40SATPath = path.join('test', 'certificado40.cer')
+const certificado40SAT = fs.readFileSync(certificado40SATPath, 'binary')
 
-const xmlString = fs.readFileSync(facturaPath, 'utf8')
+const xmlString = fs.readFileSync(factura33Path, 'utf8')
+const xmlString40 = fs.readFileSync(factura40Path, 'utf8')
 const xmlStringIncomplete = '<?xml version="1.0" encoding="UTF-8"?><whatever doesntmatter="yes"></whatever>'
 const xmlStringNoTimbre = '<?xml version="1.0" encoding="UTF-8"?><cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd" Version="3.3" Serie="A" Folio="167ABC" Fecha="2017-06-14T09:09:23"></cfdi:Comprobante>'
 const xmlStringNoAttributes = '<?xml version="1.0" encoding="UTF-8"?><cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd" Version="3.3" Serie="A" Folio="167ABC" Fecha="2017-06-14T09:09:23"><tfd:TimbreFiscalDigital xmlns:tfd="http://www.sat.gob.mx/TimbreFiscalDigital" xsi:schemaLocation="http://www.sat.gob.mx/TimbreFiscalDigital http://www.sat.gob.mx/sitio_internet/cfd/TimbreFiscalDigital/TimbreFiscalDigitalv11.xsd" Version="1.1"/></cfdi:Comprobante>'
@@ -85,7 +89,7 @@ describe('validaSelloSAT', () => {
   })
 })
 
-describe('validaFactura', () => {
+describe('validaFactura 3.3', () => {
   it('should validate a factura', async () => {
     const result = await validacion.validaFactura(xmlString, certificadoSAT)
     expect(result).to.deep.include({valid: true})
@@ -109,5 +113,12 @@ describe('validaFactura', () => {
   it('should return error message when invalid XML is sent', async () => {
     const result = await validacion.validaFactura('something wrong', certificadoSAT)
     expect(result).to.deep.include({valid: false, message: 'Factura no pudo ser leída'})
+  })
+})
+
+describe('validaFactura 4.0', () => {
+  it('should validate a factura', async () => {
+    const result = await validacion.validaFactura(xmlString40, certificado40SAT)
+    expect(result).to.deep.include({valid: true})
   })
 })
