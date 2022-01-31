@@ -20,7 +20,7 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cadenaPath = _path2.default.join(__dirname, 'xslt', 'cadenaoriginal_3_3.xslt');
+var cadenaPath = _path2.default.join(__dirname, 'xslt', 'cfd', '3', 'cadenaoriginal_3_3', 'cadenaoriginal_3_3.xslt');
 
 /**
  * Converts a callback to a promise, used for async/await
