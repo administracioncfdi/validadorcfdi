@@ -3,8 +3,6 @@ import { parseXML } from './xmlParser'
 import path from 'path'
 import fs from 'fs'
 
-const cadenaPath = path.join(__dirname, 'xslt', 'cfd', '3', 'cadenaoriginal_3_3', 'cadenaoriginal_3_3.xslt')
-
 /**
  * Converts a callback to a promise, used for async/await
  *
@@ -30,6 +28,22 @@ function callbackToPromise (method, ...args) {
  */
 function sanitizeInput (value = '') {
   return value.replace(/\r?\n|\r|\t|(\s)+/g, ' ').trim()
+}
+
+/**
+ * Returns the appropriate cadena path depending on the
+ * CFDI version provided
+ *
+ * @param {string} version - CFDI Version
+ * @return {string} resolved path
+ */
+function getCadenaPathFromVersion (version = '3.3') {
+  const cadena33Path = path.join(__dirname, 'xslt', 'cfd', '3', 'cadenaoriginal_3_3', 'cadenaoriginal_3_3.xslt')
+  const cadena40Path = path.join(__dirname, 'xslt', 'cfd', '4', 'cadenaoriginal_4_0', 'cadenaoriginal_4_0.xslt')
+  if (version === '4.0') {
+    return cadena40Path
+  }
+  return cadena33Path
 }
 
 /**
@@ -76,10 +90,10 @@ export default {
    * @param  {string}  facturaXML - The XML string of a 3.3 factura
    * @return {Promise<string>} Cadena Original string result
    */
-  generaCadena: async (facturaXML) => {
+  generaCadena: async (facturaXML, version = '3.3') => {
     if (!facturaXML) return false
     try {
-      const parsedFile = await callbackToPromise(libxslt.parseFile, cadenaPath)
+      const parsedFile = await callbackToPromise(libxslt.parseFile, getCadenaPathFromVersion(version))
       const cadena = await new Promise((resolve, reject) => {
         parsedFile.apply(facturaXML, function (err, transform) {
           return err ? reject(err) : resolve(transform)
@@ -97,11 +111,11 @@ export default {
    * @param  {string}  facturaPath - Path to the .xml file
    * @return {Promise<string>} Cadena Original string result
    */
-  generaCadenaFile: async (facturaPath) => {
+  generaCadenaFile: async (facturaPath, version = '3.3') => {
     if (!facturaPath) return false
     try {
       fs.statSync(facturaPath)
-      const parsedFile = await callbackToPromise(libxslt.parseFile, cadenaPath)
+      const parsedFile = await callbackToPromise(libxslt.parseFile, getCadenaPathFromVersion(version))
       const cadena = await new Promise((resolve, reject) => {
         parsedFile.applyToFile(facturaPath, function (err, transform) {
           return err ? reject(err) : resolve(transform)

@@ -20,8 +20,6 @@ var _fs2 = _interopRequireDefault(_fs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cadenaPath = _path2.default.join(__dirname, 'xslt', 'cfd', '3', 'cadenaoriginal_3_3', 'cadenaoriginal_3_3.xslt');
-
 /**
  * Converts a callback to a promise, used for async/await
  *
@@ -53,6 +51,24 @@ function sanitizeInput() {
   var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
   return value.replace(/\r?\n|\r|\t|(\s)+/g, ' ').trim();
+}
+
+/**
+ * Returns the appropriate cadena path depending on the
+ * CFDI version provided
+ *
+ * @param {string} version - CFDI Version
+ * @return {string} resolved path
+ */
+function getCadenaPathFromVersion() {
+  var version = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '3.3';
+
+  var cadena33Path = _path2.default.join(__dirname, 'xslt', 'cfd', '3', 'cadenaoriginal_3_3', 'cadenaoriginal_3_3.xslt');
+  var cadena40Path = _path2.default.join(__dirname, 'xslt', 'cfd', '4', 'cadenaoriginal_4_0', 'cadenaoriginal_4_0.xslt');
+  if (version === '4.0') {
+    return cadena40Path;
+  }
+  return cadena33Path;
 }
 
 /**
@@ -102,9 +118,11 @@ exports.default = {
    * @return {Promise<string>} Cadena Original string result
    */
   generaCadena: async function generaCadena(facturaXML) {
+    var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '3.3';
+
     if (!facturaXML) return false;
     try {
-      var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, cadenaPath);
+      var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, getCadenaPathFromVersion(version));
       var cadena = await new Promise(function (resolve, reject) {
         parsedFile.apply(facturaXML, function (err, transform) {
           return err ? reject(err) : resolve(transform);
@@ -123,10 +141,12 @@ exports.default = {
    * @return {Promise<string>} Cadena Original string result
    */
   generaCadenaFile: async function generaCadenaFile(facturaPath) {
+    var version = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '3.3';
+
     if (!facturaPath) return false;
     try {
       _fs2.default.statSync(facturaPath);
-      var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, cadenaPath);
+      var parsedFile = await callbackToPromise(_libxslt2.default.parseFile, getCadenaPathFromVersion(version));
       var cadena = await new Promise(function (resolve, reject) {
         parsedFile.applyToFile(facturaPath, function (err, transform) {
           return err ? reject(err) : resolve(transform);

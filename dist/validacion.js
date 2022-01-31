@@ -140,8 +140,9 @@ async function composeResults() {
     result.message = 'Factura no pudo ser leída';
     return result;
   }
-
-  var comprobante = factura.get('//cfdi:Comprobante', { cfdi: 'http://www.sat.gob.mx/cfd/3' });
+  var cfdi3Namespace = { cfdi: 'http://www.sat.gob.mx/cfd/3' };
+  var cfdi4Namespace = { cfdi: 'http://www.sat.gob.mx/cfd/4' };
+  var comprobante = factura.get('//cfdi:Comprobante', cfdi3Namespace) || factura.get('//cfdi:Comprobante', cfdi4Namespace);
   if (!comprobante) {
     result.message = 'Factura no contiene nodo Comprobante';
     return result;
@@ -161,7 +162,7 @@ async function composeResults() {
   result.selloSAT = timbreFiscalDigital.attr('SelloSAT') && timbreFiscalDigital.attr('SelloSAT').value() || '';
   result.selloSAT = cleanSpecialCharacters(result.selloSAT);
 
-  var cadenaOriginal = await _cadenaOriginal2.default.generaCadena(facturaXML);
+  var cadenaOriginal = await _cadenaOriginal2.default.generaCadena(facturaXML, result.version);
   result.cadenaOriginal.cadena = cadenaOriginal;
   result.cadenaOriginal.sha = sha256Digest(cadenaOriginal).digest().toHex();
   result.cadenaOriginal.certificadoUsado = comprobante.attr('NoCertificado') && comprobante.attr('NoCertificado').value() || '';
@@ -185,13 +186,14 @@ async function composeResults() {
  * @param {string} facturaXML - Factura to validate
  * @param {string} certificado - Base64 encoded certificate
  * @param {string} selloCFDI - SelloSAT from factura
+ * @param {string} version - Factura version ('3.3' || '4.0')
  * @return {boolean} whether Sello Emisor is valid given the certificate
  */
-async function validaSelloEmisor(facturaXML, certificado, selloCFDI) {
+async function validaSelloEmisor(facturaXML, certificado, selloCFDI, version) {
   certificado = cleanSpecialCharacters(certificado);
   selloCFDI = cleanSpecialCharacters(selloCFDI);
   if (!facturaXML || !certificado || !selloCFDI || selloCFDI.length !== 344 && selloCFDI.length !== 172) return false;
-  var cadenaOriginal = await _cadenaOriginal2.default.generaCadena(facturaXML);
+  var cadenaOriginal = await _cadenaOriginal2.default.generaCadena(facturaXML, version);
   if (!cadenaOriginal) return false;
   var cadenaOriginalHash = sha256Digest(cadenaOriginal);
   var publicKeyCert = getPKFromBase64(certificado);
@@ -244,7 +246,7 @@ async function validaFactura(facturaXML, certificadoSAT) {
   // Read certificados, certificates and general values from factura
   var result = await composeResults(facturaXML, certificadoSAT);
   if (result.message) return result;
-  var validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD);
+  var validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version);
   result.validaSelloEmisorResult = validaSelloEmisorResult;
   var validaSelloSATResult = await validaSelloSAT(facturaXML, certificadoSAT, result.selloSAT);
   result.validaSelloSATResult = validaSelloSATResult;
