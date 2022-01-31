@@ -1,4 +1,4 @@
-# Validador de CFDI Versión 3.3
+# Validador de CFDI Versión 3.3 y 4.0
 > Librería de JavaScript que valida CFDI a partir de XML y certificado
 
 [![npm version](https://badge.fury.io/js/validadorcfdi.svg)](https://badge.fury.io/js/validadorcfdi)
