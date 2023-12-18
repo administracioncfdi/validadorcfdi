@@ -10,6 +10,8 @@ var _cadenaOriginal2 = _interopRequireDefault(_cadenaOriginal);
 
 var _xmlParser = require('./xmlParser');
 
+var _certificado = require('./certificado');
+
 var _nodeForge = require('node-forge');
 
 var _nodeForge2 = _interopRequireDefault(_nodeForge);
@@ -89,6 +91,20 @@ function getCertificateFromDer() {
 }
 
 /**
+ * Returns Certificado Number (ID) from a given factura
+ *
+ * @param {object} factura - libxml object
+ * @return {string} ID NoCertificadoSAT
+ */
+function getCertificadoSATFromFactura(factura) {
+  var timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' });
+  if (!timbreFiscalDigital) {
+    return false;
+  }
+  return timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value() || false;
+}
+
+/**
  * Certificates contain pairs, should remove first part of pair
  *
  * @param {string} serialNumber - certificate serial number to clean
@@ -121,20 +137,22 @@ function cleanSpecialCharacters() {
  * Returns basic factura and certificate information as an object
  * Note: this doesn't validate sellos
  *
- * @param {string} facturaXML - Factura to validate
+ * @param {string} factura - Factura to validate
+ * @param {object} parsedFactura - libxml object of parsedFactura
  * @param {string} certificado - DER Certificate (.cer file)
  * @return {object} factura information
  */
 async function composeResults() {
   var facturaXML = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var certificado = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var parsedFactura = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+  var certificado = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
 
   var result = { valid: false, cadenaOriginal: {}, cadenaOriginalCC: {} };
   if (!facturaXML || !certificado) {
     result.message = 'Factura o certificado inexistente';
     return result;
   }
-  var factura = (0, _xmlParser.parseXML)(facturaXML);
+  var factura = parsedFactura || (0, _xmlParser.parseXML)(facturaXML);
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída';
@@ -171,6 +189,7 @@ async function composeResults() {
   var cadenaOriginalCC = await _cadenaOriginal2.default.generaCadenaOriginalCC(facturaXML);
   result.cadenaOriginalCC.cadena = cadenaOriginalCC;
   result.cadenaOriginalCC.sha = sha256Digest(cadenaOriginalCC).digest().toHex();
+
   result.cadenaOriginalCC.certificadoUsado = cleanCertificateSerialNumber(getCertificateFromDer(certificado).serialNumber);
   result.cadenaOriginalCC.certificadoReportado = timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value() || '';
 
@@ -239,12 +258,21 @@ async function validaSelloSAT(facturaXML, certificadoSAT, selloSAT) {
  * Checks that a factura is valid and returns all related information
  *
  * @param {string} facturaXML - Factura to validate
- * @param {string} certificadoSAT - DER Certificate (.cer file)
+ * @param {string} certificadoSAT - Optional DER Certificate (.cer file)
  * @return {object} factura information and validation result
  */
-async function validaFactura(facturaXML, certificadoSAT) {
+async function validaFactura(facturaXML) {
+  var certificadoSAT = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+
+  // Parse factura
+  var factura = (0, _xmlParser.parseXML)(facturaXML);
+  if (!certificadoSAT) {
+    var id = getCertificadoSATFromFactura(factura);
+    certificadoSAT = await (0, _certificado.downloadCertificateById)(id);
+    certificadoSAT = certificadoSAT.toString('binary');
+  }
   // Read certificados, certificates and general values from factura
-  var result = await composeResults(facturaXML, certificadoSAT);
+  var result = await composeResults(facturaXML, factura, certificadoSAT);
   if (result.message) return result;
   var validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version);
   result.validaSelloEmisorResult = validaSelloEmisorResult;

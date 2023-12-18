@@ -1,5 +1,6 @@
 import cadena from './cadenaOriginal'
 import { parseXML } from './xmlParser'
+import { downloadCertificateById } from './certificado'
 import forge from 'node-forge'
 
 /**
@@ -67,6 +68,20 @@ function getCertificateFromDer (der = '') {
 }
 
 /**
+ * Returns Certificado Number (ID) from a given factura
+ *
+ * @param {object} factura - libxml object
+ * @return {string} ID NoCertificadoSAT
+ */
+function getCertificadoSATFromFactura (factura) {
+  const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
+  if (!timbreFiscalDigital) {
+    return false
+  }
+  return (timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value()) || false
+}
+
+/**
  * Certificates contain pairs, should remove first part of pair
  *
  * @param {string} serialNumber - certificate serial number to clean
@@ -95,17 +110,18 @@ function cleanSpecialCharacters (str = '') {
  * Returns basic factura and certificate information as an object
  * Note: this doesn't validate sellos
  *
- * @param {string} facturaXML - Factura to validate
+ * @param {string} factura - Factura to validate
+ * @param {object} parsedFactura - libxml object of parsedFactura
  * @param {string} certificado - DER Certificate (.cer file)
  * @return {object} factura information
  */
-async function composeResults (facturaXML = '', certificado = '') {
+async function composeResults (facturaXML = '', parsedFactura = '', certificado = '') {
   let result = {valid: false, cadenaOriginal: {}, cadenaOriginalCC: {}}
   if (!facturaXML || !certificado) {
     result.message = 'Factura o certificado inexistente'
     return result
   }
-  let factura = parseXML(facturaXML)
+  let factura = parsedFactura || parseXML(facturaXML)
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída'
@@ -142,6 +158,7 @@ async function composeResults (facturaXML = '', certificado = '') {
   const cadenaOriginalCC = await cadena.generaCadenaOriginalCC(facturaXML)
   result.cadenaOriginalCC.cadena = cadenaOriginalCC
   result.cadenaOriginalCC.sha = sha256Digest(cadenaOriginalCC).digest().toHex()
+
   result.cadenaOriginalCC.certificadoUsado = cleanCertificateSerialNumber(getCertificateFromDer(certificado).serialNumber)
   result.cadenaOriginalCC.certificadoReportado = (timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value()) || ''
 
@@ -210,12 +227,19 @@ async function validaSelloSAT (facturaXML, certificadoSAT, selloSAT) {
  * Checks that a factura is valid and returns all related information
  *
  * @param {string} facturaXML - Factura to validate
- * @param {string} certificadoSAT - DER Certificate (.cer file)
+ * @param {string} certificadoSAT - Optional DER Certificate (.cer file)
  * @return {object} factura information and validation result
  */
-async function validaFactura (facturaXML, certificadoSAT) {
+async function validaFactura (facturaXML, certificadoSAT = '') {
+  // Parse factura
+  const factura = parseXML(facturaXML)
+  if (!certificadoSAT) {
+    const id = getCertificadoSATFromFactura(factura)
+    certificadoSAT = await downloadCertificateById(id)
+    certificadoSAT = certificadoSAT.toString('binary')
+  }
   // Read certificados, certificates and general values from factura
-  let result = await composeResults(facturaXML, certificadoSAT)
+  let result = await composeResults(facturaXML, factura, certificadoSAT)
   if (result.message) return result
   const validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version)
   result.validaSelloEmisorResult = validaSelloEmisorResult
