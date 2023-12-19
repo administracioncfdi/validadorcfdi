@@ -211,10 +211,9 @@ var _default = exports["default"] = {
    * @return {string} Cadena Original of Complemento string result
    */
   generaCadenaOriginalCC: function generaCadenaOriginalCC(facturaXML) {
-    var factura, cadenaOriginal;
-    factura = (0, _xmlParser.parseXML)(facturaXML);
+    var factura = (0, _xmlParser.parseXML)(facturaXML);
     if (!factura) return false;
-    cadenaOriginal = getCCValues(factura);
+    var cadenaOriginal = getCCValues(factura);
 
     // Validate size and that all elements contain a truthy value
     if (cadenaOriginal.length < 6 || cadenaOriginal.some(function (element) {

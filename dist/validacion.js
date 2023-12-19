@@ -386,43 +386,56 @@ function _validaFactura() {
           // Parse factura
           factura = (0, _xmlParser.parseXML)(facturaXML);
           if (certificadoSAT) {
-            _context4.next = 8;
+            _context4.next = 14;
             break;
           }
           id = getCertificadoSATFromFactura(factura);
-          _context4.next = 6;
+          _context4.prev = 4;
+          _context4.next = 7;
           return (0, _certificado.downloadCertificateById)(id);
-        case 6:
+        case 7:
           certificadoSAT = _context4.sent;
-          certificadoSAT = certificadoSAT.toString('binary');
-        case 8:
-          _context4.next = 10;
-          return composeResults(facturaXML, factura, certificadoSAT);
+          _context4.next = 13;
+          break;
         case 10:
+          _context4.prev = 10;
+          _context4.t0 = _context4["catch"](4);
+          return _context4.abrupt("return", {
+            valid: false,
+            message: 'Certificado no pudo ser descargado del portal del SAT',
+            cadenaOriginal: {},
+            cadenaOriginalCC: {}
+          });
+        case 13:
+          certificadoSAT = certificadoSAT.toString('binary');
+        case 14:
+          _context4.next = 16;
+          return composeResults(facturaXML, factura, certificadoSAT);
+        case 16:
           result = _context4.sent;
           if (!result.message) {
-            _context4.next = 13;
+            _context4.next = 19;
             break;
           }
           return _context4.abrupt("return", result);
-        case 13:
-          _context4.next = 15;
+        case 19:
+          _context4.next = 21;
           return validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version);
-        case 15:
+        case 21:
           validaSelloEmisorResult = _context4.sent;
           result.validaSelloEmisorResult = validaSelloEmisorResult;
-          _context4.next = 19;
+          _context4.next = 25;
           return validaSelloSAT(facturaXML, certificadoSAT, result.selloSAT);
-        case 19:
+        case 25:
           validaSelloSATResult = _context4.sent;
           result.validaSelloSATResult = validaSelloSATResult;
           result.valid = validaSelloEmisorResult && validaSelloSATResult;
           return _context4.abrupt("return", result);
-        case 23:
+        case 29:
         case "end":
           return _context4.stop();
       }
-    }, _callee4);
+    }, _callee4, null, [[4, 10]]);
   }));
   return _validaFactura.apply(this, arguments);
 }

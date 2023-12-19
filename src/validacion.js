@@ -235,7 +235,11 @@ async function validaFactura (facturaXML, certificadoSAT = '') {
   const factura = parseXML(facturaXML)
   if (!certificadoSAT) {
     const id = getCertificadoSATFromFactura(factura)
-    certificadoSAT = await downloadCertificateById(id)
+    try {
+      certificadoSAT = await downloadCertificateById(id)
+    } catch (error) {
+      return { valid: false, message: 'Certificado no pudo ser descargado del portal del SAT', cadenaOriginal: {}, cadenaOriginalCC: {} }
+    }
     certificadoSAT = certificadoSAT.toString('binary')
   }
   // Read certificados, certificates and general values from factura
