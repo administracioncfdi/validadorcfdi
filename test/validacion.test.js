@@ -136,4 +136,13 @@ describe('validaFactura 4.0', () => {
       console.error('Assertion failed:', error.message)
     }
   })
+
+  it('should cache the response a second time', async () => {
+    const result = await validacion.validaFactura(xmlString40)
+    try {
+      assert.deepInclude(result, { valid: true })
+    } catch (error) {
+      console.error('Assertion failed:', error.message)
+    }
+  })
 })

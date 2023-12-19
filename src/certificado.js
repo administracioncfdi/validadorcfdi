@@ -1,4 +1,8 @@
 import fetch from 'node-fetch'
+import NodeCache from 'node-cache'
+
+// Initialize the cache
+const cache = new NodeCache()
 
 /**
  * Performs a fetch operation to download content from the specified URL.
@@ -26,8 +30,18 @@ async function performFetch (url) {
  * @throws {Error} If the download fails or the response status is not OK.
  */
 export async function downloadCertificate (url, fetchImplementation = performFetch) {
+  // Check if the response is already cached
+  const cachedResponse = cache.get(url)
+  if (cachedResponse) {
+    return cachedResponse
+  }
+
   try {
     const fileContent = await fetchImplementation(url)
+
+    // Cache the response for 6 months
+    cache.set(url, fileContent, 15768)
+
     return fileContent
   } catch (error) {
     throw new Error(error)
