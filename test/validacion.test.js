@@ -92,34 +92,34 @@ describe('validaSelloSAT', () => {
 describe('validaFactura 3.3', () => {
   it('should validate a factura', async () => {
     const result = await validacion.validaFactura(xmlString, certificadoSAT)
-    expect(result).to.deep.include({valid: true})
+    expect(result).to.deep.include({ valid: true })
   })
   it('should return error message for invalid factura', async () => {
     const result = await validacion.validaFactura('', certificadoSAT)
-    expect(result).to.deep.include({valid: false, message: 'Factura o certificado inexistente'})
+    expect(result).to.deep.include({ valid: false, message: 'Factura o certificado inexistente' })
   })
   it('should return error message when incomplete XML is sent', async () => {
     const result = await validacion.validaFactura(xmlStringIncomplete, certificadoSAT)
-    expect(result).to.deep.include({valid: false, message: 'Factura no contiene nodo Comprobante'})
+    expect(result).to.deep.include({ valid: false, message: 'Factura no contiene nodo Comprobante' })
   })
   it('should return error message when incomplete XML with no TFD is sent', async () => {
     const result = await validacion.validaFactura(xmlStringNoTimbre, certificadoSAT)
-    expect(result).to.deep.include({valid: false, message: 'Factura no contiene Timbre Fiscal Digital'})
+    expect(result).to.deep.include({ valid: false, message: 'Factura no contiene Timbre Fiscal Digital' })
   })
   it('should return error message when incomplete XML with missing attributes is sent', async () => {
     const result = await validacion.validaFactura(xmlStringNoAttributes, certificadoSAT)
-    expect(result).to.deep.include({valid: false, message: 'Factura no contiene certificados correctos'})
+    expect(result).to.deep.include({ valid: false, message: 'Factura no contiene certificados correctos' })
   })
   it('should return error message when invalid XML is sent', async () => {
     const result = await validacion.validaFactura('something wrong', certificadoSAT)
-    expect(result).to.deep.include({valid: false, message: 'Factura no pudo ser leída'})
+    expect(result).to.deep.include({ valid: false, message: 'Factura no pudo ser leída' })
   })
 })
 
 describe('validaFactura 4.0', () => {
   it('should validate a factura with certificate provided', async () => {
     const result = await validacion.validaFactura(xmlString40, certificado40SAT)
-    expect(result).to.deep.include({valid: true})
+    expect(result).to.deep.include({ valid: true })
   })
 
   it('should validate a factura without certificate provided', async () => {

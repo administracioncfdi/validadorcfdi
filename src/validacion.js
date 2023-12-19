@@ -10,7 +10,7 @@ import forge from 'node-forge'
  * @return {string} sha256Digest
  */
 function sha256Digest (toHash = '') {
-  let md = forge.md.sha256.create()
+  const md = forge.md.sha256.create()
   md.update(toHash, 'utf8')
   return md
 }
@@ -25,11 +25,11 @@ function getCertificateFromBase64 (certString = '') {
   if (!certString) return false
   try {
     // base64-decode DER bytes
-    let certDerBytes = forge.util.decode64(certString)
+    const certDerBytes = forge.util.decode64(certString)
     // parse DER to an ASN.1 object
-    let obj = forge.asn1.fromDer(certDerBytes)
+    const obj = forge.asn1.fromDer(certDerBytes)
     // convert ASN.1 object to forge certificate object
-    let cert = forge.pki.certificateFromAsn1(obj)
+    const cert = forge.pki.certificateFromAsn1(obj)
     return cert
   } catch (e) {
     return false
@@ -43,7 +43,7 @@ function getCertificateFromBase64 (certString = '') {
  * @return {string} Public Key
  */
 function getPKFromBase64 (certString = '') {
-  let cert = getCertificateFromBase64(certString)
+  const cert = getCertificateFromBase64(certString)
   if (!cert) return false
   // get forge public key object
   return cert.publicKey
@@ -58,8 +58,8 @@ function getPKFromBase64 (certString = '') {
 function getCertificateFromDer (der = '') {
   if (!der) return false
   try {
-    let asnObj = forge.asn1.fromDer(der)
-    let asn1Cert = forge.pki.certificateFromAsn1(asnObj)
+    const asnObj = forge.asn1.fromDer(der)
+    const asn1Cert = forge.pki.certificateFromAsn1(asnObj)
     // PEM -> forge.pki.publicKeyToPem(asn1Cert.publicKey)
     return asn1Cert
   } catch (e) {
@@ -116,12 +116,12 @@ function cleanSpecialCharacters (str = '') {
  * @return {object} factura information
  */
 async function composeResults (facturaXML = '', parsedFactura = '', certificado = '') {
-  let result = {valid: false, cadenaOriginal: {}, cadenaOriginalCC: {}}
+  const result = { valid: false, cadenaOriginal: {}, cadenaOriginalCC: {} }
   if (!facturaXML || !certificado) {
     result.message = 'Factura o certificado inexistente'
     return result
   }
-  let factura = parsedFactura || parseXML(facturaXML)
+  const factura = parsedFactura || parseXML(facturaXML)
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída'
@@ -239,7 +239,7 @@ async function validaFactura (facturaXML, certificadoSAT = '') {
     certificadoSAT = certificadoSAT.toString('binary')
   }
   // Read certificados, certificates and general values from factura
-  let result = await composeResults(facturaXML, factura, certificadoSAT)
+  const result = await composeResults(facturaXML, factura, certificadoSAT)
   if (result.message) return result
   const validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version)
   result.validaSelloEmisorResult = validaSelloEmisorResult
@@ -252,7 +252,7 @@ async function validaFactura (facturaXML, certificadoSAT = '') {
 
 export default {
   readFactura: composeResults,
-  validaSelloEmisor: validaSelloEmisor,
-  validaSelloSAT: validaSelloSAT,
-  validaFactura: validaFactura
+  validaSelloEmisor,
+  validaSelloSAT,
+  validaFactura
 }

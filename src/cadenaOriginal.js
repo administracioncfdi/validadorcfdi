@@ -53,7 +53,7 @@ function getCadenaPathFromVersion (version = '3.3') {
  * @return {Array} cadenaOriginal of complemento
  */
 function getCCValues (factura = '') {
-  let cadenaOriginal = []
+  const cadenaOriginal = []
   if (!factura) return cadenaOriginal
   const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
 
@@ -133,11 +133,9 @@ export default {
    * @return {string} Cadena Original of Complemento string result
    */
   generaCadenaOriginalCC: (facturaXML) => {
-    let factura, cadenaOriginal
-
-    factura = parseXML(facturaXML)
+    const factura = parseXML(facturaXML)
     if (!factura) return false
-    cadenaOriginal = getCCValues(factura)
+    const cadenaOriginal = getCCValues(factura)
 
     // Validate size and that all elements contain a truthy value
     if (cadenaOriginal.length < 6 || cadenaOriginal.some((element) => !element)) {
