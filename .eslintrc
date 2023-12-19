@@ -1,7 +1,0 @@
-{
-  "parser": "babel-eslint",
-  extends: 'standard',
-  "env": {
-    "mocha": true
-  }
-}
