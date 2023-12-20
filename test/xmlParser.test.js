@@ -16,7 +16,7 @@ describe('parseXML', () => {
     expect(xmlResult).to.equal(false)
   })
   it('should return false when some other data type is sent', async () => {
-    const xmlResult = parseXML({yes: 'no'})
+    const xmlResult = parseXML({ yes: 'no' })
     expect(xmlResult).to.equal(false)
   })
   it('should return false when invalid XML is sent', async () => {

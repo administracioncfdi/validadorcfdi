@@ -22,6 +22,7 @@ import fs from 'fs';
 
 const validador = require('validadorcfdi');
 const factura = '<?xml version="1.0" encoding="UTF-8"?><whatever doesntmatter="yes"></whatever>';
+// Pasar el certificado es opcional, si no lo tienes puedes dejarlo vacío
 const certificadoSAT = fs.readFileSync(certificadoSATPath, 'binary');
 
 const resultado = await validador.validacion.validaFactura(factura, certificadoSAT);

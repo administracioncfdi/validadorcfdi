@@ -1,5 +1,6 @@
 import cadena from './cadenaOriginal'
 import { parseXML } from './xmlParser'
+import { downloadCertificateById } from './certificado'
 import forge from 'node-forge'
 
 /**
@@ -9,7 +10,7 @@ import forge from 'node-forge'
  * @return {string} sha256Digest
  */
 function sha256Digest (toHash = '') {
-  let md = forge.md.sha256.create()
+  const md = forge.md.sha256.create()
   md.update(toHash, 'utf8')
   return md
 }
@@ -24,11 +25,11 @@ function getCertificateFromBase64 (certString = '') {
   if (!certString) return false
   try {
     // base64-decode DER bytes
-    let certDerBytes = forge.util.decode64(certString)
+    const certDerBytes = forge.util.decode64(certString)
     // parse DER to an ASN.1 object
-    let obj = forge.asn1.fromDer(certDerBytes)
+    const obj = forge.asn1.fromDer(certDerBytes)
     // convert ASN.1 object to forge certificate object
-    let cert = forge.pki.certificateFromAsn1(obj)
+    const cert = forge.pki.certificateFromAsn1(obj)
     return cert
   } catch (e) {
     return false
@@ -42,7 +43,7 @@ function getCertificateFromBase64 (certString = '') {
  * @return {string} Public Key
  */
 function getPKFromBase64 (certString = '') {
-  let cert = getCertificateFromBase64(certString)
+  const cert = getCertificateFromBase64(certString)
   if (!cert) return false
   // get forge public key object
   return cert.publicKey
@@ -57,13 +58,27 @@ function getPKFromBase64 (certString = '') {
 function getCertificateFromDer (der = '') {
   if (!der) return false
   try {
-    let asnObj = forge.asn1.fromDer(der)
-    let asn1Cert = forge.pki.certificateFromAsn1(asnObj)
+    const asnObj = forge.asn1.fromDer(der)
+    const asn1Cert = forge.pki.certificateFromAsn1(asnObj)
     // PEM -> forge.pki.publicKeyToPem(asn1Cert.publicKey)
     return asn1Cert
   } catch (e) {
     return false
   }
+}
+
+/**
+ * Returns Certificado Number (ID) from a given factura
+ *
+ * @param {object} factura - libxml object
+ * @return {string} ID NoCertificadoSAT
+ */
+function getCertificadoSATFromFactura (factura) {
+  const timbreFiscalDigital = factura.get('//tfd:TimbreFiscalDigital', { tfd: 'http://www.sat.gob.mx/TimbreFiscalDigital' })
+  if (!timbreFiscalDigital) {
+    return false
+  }
+  return (timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value()) || false
 }
 
 /**
@@ -95,17 +110,18 @@ function cleanSpecialCharacters (str = '') {
  * Returns basic factura and certificate information as an object
  * Note: this doesn't validate sellos
  *
- * @param {string} facturaXML - Factura to validate
+ * @param {string} factura - Factura to validate
+ * @param {object} parsedFactura - libxml object of parsedFactura
  * @param {string} certificado - DER Certificate (.cer file)
  * @return {object} factura information
  */
-async function composeResults (facturaXML = '', certificado = '') {
-  let result = {valid: false, cadenaOriginal: {}, cadenaOriginalCC: {}}
+async function composeResults (facturaXML = '', parsedFactura = '', certificado = '') {
+  const result = { valid: false, cadenaOriginal: {}, cadenaOriginalCC: {} }
   if (!facturaXML || !certificado) {
     result.message = 'Factura o certificado inexistente'
     return result
   }
-  let factura = parseXML(facturaXML)
+  const factura = parsedFactura || parseXML(facturaXML)
 
   if (!factura || factura.toString() === '') {
     result.message = 'Factura no pudo ser leída'
@@ -142,6 +158,7 @@ async function composeResults (facturaXML = '', certificado = '') {
   const cadenaOriginalCC = await cadena.generaCadenaOriginalCC(facturaXML)
   result.cadenaOriginalCC.cadena = cadenaOriginalCC
   result.cadenaOriginalCC.sha = sha256Digest(cadenaOriginalCC).digest().toHex()
+
   result.cadenaOriginalCC.certificadoUsado = cleanCertificateSerialNumber(getCertificateFromDer(certificado).serialNumber)
   result.cadenaOriginalCC.certificadoReportado = (timbreFiscalDigital.attr('NoCertificadoSAT') && timbreFiscalDigital.attr('NoCertificadoSAT').value()) || ''
 
@@ -210,12 +227,23 @@ async function validaSelloSAT (facturaXML, certificadoSAT, selloSAT) {
  * Checks that a factura is valid and returns all related information
  *
  * @param {string} facturaXML - Factura to validate
- * @param {string} certificadoSAT - DER Certificate (.cer file)
+ * @param {string} certificadoSAT - Optional DER Certificate (.cer file)
  * @return {object} factura information and validation result
  */
-async function validaFactura (facturaXML, certificadoSAT) {
+async function validaFactura (facturaXML, certificadoSAT = '') {
+  // Parse factura
+  const factura = parseXML(facturaXML)
+  if (!certificadoSAT) {
+    const id = getCertificadoSATFromFactura(factura)
+    try {
+      certificadoSAT = await downloadCertificateById(id)
+    } catch (error) {
+      return { valid: false, message: 'Certificado no pudo ser descargado del portal del SAT', cadenaOriginal: {}, cadenaOriginalCC: {} }
+    }
+    certificadoSAT = certificadoSAT.toString('binary')
+  }
   // Read certificados, certificates and general values from factura
-  let result = await composeResults(facturaXML, certificadoSAT)
+  const result = await composeResults(facturaXML, factura, certificadoSAT)
   if (result.message) return result
   const validaSelloEmisorResult = await validaSelloEmisor(facturaXML, result.certificadoEmisor, result.selloCFD, result.version)
   result.validaSelloEmisorResult = validaSelloEmisorResult
@@ -228,7 +256,7 @@ async function validaFactura (facturaXML, certificadoSAT) {
 
 export default {
   readFactura: composeResults,
-  validaSelloEmisor: validaSelloEmisor,
-  validaSelloSAT: validaSelloSAT,
-  validaFactura: validaFactura
+  validaSelloEmisor,
+  validaSelloSAT,
+  validaFactura
 }
