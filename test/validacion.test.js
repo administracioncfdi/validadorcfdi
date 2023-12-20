@@ -94,9 +94,9 @@ describe('validaFactura 3.3', () => {
     const result = await validacion.validaFactura(xmlString, certificadoSAT)
     expect(result).to.deep.include({ valid: true })
   })
-  it('should not validate an old expired certificate', async () => {
+  it('should validate old expired certificate by fetching from S3', async () => {
     const result = await validacion.validaFactura(xmlString)
-    expect(result).to.deep.include({ valid: false, message: 'Certificado no pudo ser descargado del portal del SAT' })
+    expect(result).to.deep.include({ valid: true })
   })
   it('should return error message for invalid factura', async () => {
     const result = await validacion.validaFactura('', certificadoSAT)

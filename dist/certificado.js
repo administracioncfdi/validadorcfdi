@@ -29,7 +29,7 @@ function performFetch(_x) {
 /**
  * Downloads a certificate file from the specified URL.
  *
- * @param {string} url - The URL of the certificate file to download.
+ * @param {object} url - The URLs of the certificate file to download.
  * @returns {Promise<Buffer>} A Promise that resolves with the certificate file content as a Buffer.
  * @throws {Error} If the download fails or the response status is not OK.
  */
@@ -72,40 +72,55 @@ function downloadCertificate(_x2) {
  * @returns {boolean} true if the CER number is valid, false otherwise.
  */
 function _downloadCertificate() {
-  _downloadCertificate = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(url) {
-    var fetchImplementation,
+  _downloadCertificate = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(_ref) {
+    var SAT,
+      S3,
+      fetchImplementation,
       cachedResponse,
       fileContent,
+      fileContentS3,
       _args2 = arguments;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
+          SAT = _ref.SAT, S3 = _ref.S3;
           fetchImplementation = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : performFetch;
           // Check if the response is already cached
-          cachedResponse = cache.get(url);
+          cachedResponse = cache.get(SAT);
           if (!cachedResponse) {
-            _context2.next = 4;
+            _context2.next = 5;
             break;
           }
           return _context2.abrupt("return", cachedResponse);
-        case 4:
-          _context2.prev = 4;
-          _context2.next = 7;
-          return fetchImplementation(url);
-        case 7:
+        case 5:
+          _context2.prev = 5;
+          _context2.next = 8;
+          return fetchImplementation(SAT);
+        case 8:
           fileContent = _context2.sent;
           // Cache the response for 6 months
-          cache.set(url, fileContent, 15768);
+          cache.set(SAT, fileContent, 15768);
           return _context2.abrupt("return", fileContent);
-        case 12:
-          _context2.prev = 12;
-          _context2.t0 = _context2["catch"](4);
-          throw new Error(_context2.t0);
-        case 15:
+        case 13:
+          _context2.prev = 13;
+          _context2.t0 = _context2["catch"](5);
+          _context2.prev = 15;
+          _context2.next = 18;
+          return fetchImplementation(S3);
+        case 18:
+          fileContentS3 = _context2.sent;
+          // The cache key is always the SAT URL
+          cache.set(SAT, fileContentS3, 15768);
+          return _context2.abrupt("return", fileContentS3);
+        case 23:
+          _context2.prev = 23;
+          _context2.t1 = _context2["catch"](15);
+          throw new Error("".concat(_context2.t0.message, ", ").concat(_context2.t1.message));
+        case 26:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[4, 12]]);
+    }, _callee2, null, [[5, 13], [15, 23]]);
   }));
   return _downloadCertificate.apply(this, arguments);
 }
@@ -114,13 +129,16 @@ function validateCERNumber(id) {
 }
 
 /**
- * Generates a URL for a certificate based on the provided ID.
+ * Generates URLs to obtaina a certificate from based on the provided ID.
  *
  * @param {string} id - The ID used to generate the certificate URL.
- * @returns {string} The generated certificate URL.
+ * @returns {object} The generated certificates URL.
  */
 function certificadoURL(id) {
-  return "https://rdc.sat.gob.mx/rccf/".concat(id.substring(0, 6), "/").concat(id.substring(6, 12), "/").concat(id.substring(12, 14), "/").concat(id.substring(14, 16), "/").concat(id.substring(16, 18), "/").concat(id, ".cer");
+  return {
+    SAT: "https://rdc.sat.gob.mx/rccf/".concat(id.substring(0, 6), "/").concat(id.substring(6, 12), "/").concat(id.substring(12, 14), "/").concat(id.substring(14, 16), "/").concat(id.substring(16, 18), "/").concat(id, ".cer"),
+    S3: "https://administracioncfdi-certificados.s3.amazonaws.com/".concat(id, ".cer")
+  };
 }
 
 /**
