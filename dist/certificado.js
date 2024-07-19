@@ -76,6 +76,7 @@ function _downloadCertificate() {
     var SAT,
       S3,
       fetchImplementation,
+      SIX_MONTHS_IN_SECONDS,
       cachedResponse,
       fileContent,
       fileContentS3,
@@ -85,42 +86,42 @@ function _downloadCertificate() {
         case 0:
           SAT = _ref.SAT, S3 = _ref.S3;
           fetchImplementation = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : performFetch;
-          // Check if the response is already cached
+          SIX_MONTHS_IN_SECONDS = 15768; // Check if the response is already cached
           cachedResponse = cache.get(SAT);
           if (!cachedResponse) {
-            _context2.next = 5;
+            _context2.next = 6;
             break;
           }
           return _context2.abrupt("return", cachedResponse);
-        case 5:
-          _context2.prev = 5;
-          _context2.next = 8;
+        case 6:
+          _context2.prev = 6;
+          _context2.next = 9;
           return fetchImplementation(SAT);
-        case 8:
+        case 9:
           fileContent = _context2.sent;
           // Cache the response for 6 months
-          cache.set(SAT, fileContent, 15768);
+          cache.set(SAT, fileContent, SIX_MONTHS_IN_SECONDS);
           return _context2.abrupt("return", fileContent);
-        case 13:
-          _context2.prev = 13;
-          _context2.t0 = _context2["catch"](5);
-          _context2.prev = 15;
-          _context2.next = 18;
+        case 14:
+          _context2.prev = 14;
+          _context2.t0 = _context2["catch"](6);
+          _context2.prev = 16;
+          _context2.next = 19;
           return fetchImplementation(S3);
-        case 18:
+        case 19:
           fileContentS3 = _context2.sent;
           // The cache key is always the SAT URL
-          cache.set(SAT, fileContentS3, 15768);
+          cache.set(SAT, fileContentS3, SIX_MONTHS_IN_SECONDS);
           return _context2.abrupt("return", fileContentS3);
-        case 23:
-          _context2.prev = 23;
-          _context2.t1 = _context2["catch"](15);
+        case 24:
+          _context2.prev = 24;
+          _context2.t1 = _context2["catch"](16);
           throw new Error("".concat(_context2.t0.message, ", ").concat(_context2.t1.message));
-        case 26:
+        case 27:
         case "end":
           return _context2.stop();
       }
-    }, _callee2, null, [[5, 13], [15, 23]]);
+    }, _callee2, null, [[6, 14], [16, 24]]);
   }));
   return _downloadCertificate.apply(this, arguments);
 }
