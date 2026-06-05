@@ -63,6 +63,7 @@
 			<xs:enumeration value="CHW"/>
 			<xs:enumeration value="CLF"/>
 			<xs:enumeration value="CLP"/>
+			<xs:enumeration value="CNH"/>
 			<xs:enumeration value="CNY"/>
 			<xs:enumeration value="COP"/>
 			<xs:enumeration value="COU"/>
@@ -77,6 +78,7 @@
 			<xs:enumeration value="DZD"/>
 			<xs:enumeration value="EGP"/>
 			<xs:enumeration value="ERN"/>
+			<xs:enumeration value="ESD"/>
 			<xs:enumeration value="ETB"/>
 			<xs:enumeration value="EUR"/>
 			<xs:enumeration value="FJD"/>
@@ -135,6 +137,7 @@
 			<xs:enumeration value="MZN"/>
 			<xs:enumeration value="NAD"/>
 			<xs:enumeration value="NGN"/>
+			<xs:enumeration value="NIC"/>
 			<xs:enumeration value="NIO"/>
 			<xs:enumeration value="NOK"/>
 			<xs:enumeration value="NPR"/>
@@ -181,9 +184,11 @@
 			<xs:enumeration value="USD"/>
 			<xs:enumeration value="USN"/>
 			<xs:enumeration value="UYI"/>
+			<xs:enumeration value="UYP"/>
 			<xs:enumeration value="UYU"/>
 			<xs:enumeration value="UZS"/>
 			<xs:enumeration value="VEF"/>
+			<xs:enumeration value="VES"/>
 			<xs:enumeration value="VND"/>
 			<xs:enumeration value="VUV"/>
 			<xs:enumeration value="WST"/>
@@ -226,6 +231,7 @@
 			<xs:enumeration value="01"/>
 			<xs:enumeration value="02"/>
 			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="c_MetodoPago">
@@ -146996,6 +147002,7 @@
 			<xs:enumeration value="78111501"/>
 			<xs:enumeration value="78111502"/>
 			<xs:enumeration value="78111503"/>
+			<xs:enumeration value="78111505"/>
 			<xs:enumeration value="78111600"/>
 			<xs:enumeration value="78111601"/>
 			<xs:enumeration value="78111602"/>
@@ -151557,6 +151564,11 @@
 			<xs:enumeration value="01"/>
 			<xs:enumeration value="02"/>
 			<xs:enumeration value="03"/>
+			<xs:enumeration value="04"/>
+			<xs:enumeration value="05"/>
+			<xs:enumeration value="06"/>
+			<xs:enumeration value="07"/>
+			<xs:enumeration value="08"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="c_Impuesto">
